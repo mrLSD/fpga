@@ -1,15 +1,18 @@
 `include "const.sv"
 
-module timer (clk, rst, number, digit_block);
+module timer (
+	input wire clk, rst, key_pause, 
+	output reg [7:0] number,
+	output reg [5:0] digit_block = `DIGIT_BLOCK_1
+);
 
-input clk, rst;
-output [7:0] number;
-output [5:0] digit_block;
+initial begin
+	digit_block = `DIGIT_BLOCK_1;
+end
 
-reg [7:0] number;
-reg [5:0] digit_block = `DIGIT_BLOCK_1;
 reg [25:0] count = 0;
 reg [5:0] hours, minutes, seconds = 0;
+reg pause = 0;
 
 always @(posedge clk or negedge rst) begin
 	if (!rst) begin
@@ -17,7 +20,7 @@ always @(posedge clk or negedge rst) begin
 		seconds <= 0;
 		minutes <= 0;
 		hours <= 0;
-	end else begin
+	end else if (!pause) begin
 		count <= count + 1'b1;
 		if (count == `CLOCK_TIME_LIMIT) begin
 			count <= 0;						
@@ -35,6 +38,10 @@ always @(posedge clk or negedge rst) begin
 				seconds <= seconds + 1'b1;
 		end 
 	end
+end
+
+always @(negedge key_pause) begin
+	pause <= ~pause;
 end
 
 reg [20:0] digit_count = 0;
