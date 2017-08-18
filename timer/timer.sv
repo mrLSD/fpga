@@ -1,7 +1,8 @@
 `include "const.sv"
 
 module timer (
-	input wire clk, rst, key_pause, 
+	input wire clk,
+	input wire [3:0] keys, 
 	output reg [7:0] number,
 	output reg [5:0] digit_block = `DIGIT_BLOCK_1
 );
@@ -12,10 +13,14 @@ end
 
 reg [25:0] count = 0;
 reg [5:0] hours, minutes, seconds = 0;
-reg pause = 0;
+reg pause = 1'b1;
+reg program_mode = 0;
 
-always @(posedge clk or negedge rst) begin
-	if (!rst) begin
+// Main CLK loop
+always @(posedge clk or negedge keys) begin
+	// Check is enabled Program Mode
+	/*if (program_mode) begin
+	end else*/ if (!keys[0]) begin
 		count <= 0;
 		seconds <= 0;
 		minutes <= 0;
@@ -40,11 +45,22 @@ always @(posedge clk or negedge rst) begin
 	end
 end
 
-always @(negedge key_pause or negedge rst) begin
-	if (!rst)
+// Key press handlers
+always @(negedge keys[0] or negedge keys[1]) begin
+	if (!keys[0])
+		pause <= 0;
+	else if (!keys[1])
+		pause <= ~pause;
+	/*case (keys)
+		4'b1110: pause <= 0;
+		4'b1101: pause <= ~pause;
+		4'b1011: program_mode <= ~program_mode;
+		default: pause <= pause;    
+	endcase*/
+	/*if (!rst)
 		pause <= 0;
 	else if (!key_pause)
-		pause <= ~pause;
+		pause <= ~pause;*/
 end
 
 reg [20:0] digit_count = 0;
