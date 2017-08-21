@@ -56,8 +56,7 @@ set_global_assignment -name NUM_PARALLEL_PROCESSORS 4
 set_location_assignment PIN_23 -to clk
 set_location_assignment PIN_87 -to rst
 set_location_assignment PIN_86 -to key_pause
-set_location_assignment PIN_90 -to key_program
-# set_location_assignment PIN_91 -to keys[3]
+set_location_assignment PIN_91 -to key_program
 
 set_location_assignment PIN_128 -to digit_block[0]
 set_location_assignment PIN_129 -to digit_block[1]
@@ -74,5 +73,13 @@ set_location_assignment PIN_121 -to number[4]
 set_location_assignment PIN_120 -to number[5]
 set_location_assignment PIN_119 -to number[6]
 set_location_assignment PIN_115 -to number[7]
+
+set_location_assignment PIN_80 -to program_led[0]
+set_location_assignment PIN_83 -to program_led[1]
+set_location_assignment PIN_84 -to program_led[2]
+
+set_location_assignment PIN_71 -to info_led[0]
+set_location_assignment PIN_70 -to info_led[1]
+set_location_assignment PIN_69 -to info_led[2]
 
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

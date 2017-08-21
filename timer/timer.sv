@@ -1,21 +1,25 @@
 `include "const.sv"
 
 module timer (
-	input wire clk, rst, key_pause, key_program, 
-	output reg [7:0] number,
-	output reg [5:0] digit_block = `DIGIT_BLOCK_1
+	input wire 		clk, rst, key_pause, key_program,
+	output wire 	[2:0] info_led,
+	output reg		[2:0] program_led, 
+	output reg 		[7:0] number,
+	output reg 		[5:0] digit_block
 );
 
 reg [25:0] count = 0;
 reg [5:0] hours, minutes, seconds = 0;
 reg pause = 0;
-reg program_mode = 0;
+reg press_kp = 0;
+
+initial begin
+	digit_block <= `DIGIT_BLOCK_1;
+end
 
 // Main CLK loop
 always @(posedge clk or negedge rst) begin
-	// Check is enabled Program Mode
-	/*if (program_mode) begin
-	end else*/ if (!rst) begin
+	if (!rst) begin
 		count <= 0;
 		seconds <= 0;
 		minutes <= 0;
@@ -40,25 +44,43 @@ always @(posedge clk or negedge rst) begin
 	end
 end
 
+assign info_led = {rst, key_pause, ~press_kp};
+
+reg [24:0] program_led_counter = 0;
+
+always @(posedge clk) begin
+	if (press_kp) begin
+		program_led_counter <= program_led_counter + 1'b1;
+		if (program_led_counter[24] == 1) begin
+			program_led_counter <= 0;
+			//program_led <= 3'b000;
+			if (program_led == 3'b111)
+				program_led <= 3'b110;
+			else
+				program_led <= {program_led[1:0], program_led[2]};
+		end 
+	end else
+		program_led <= 3'b111; 
+end
+
+wire key_d;
+debounce db(key_program, clk, key_d);
+
+always @(negedge key_d) begin
+	press_kp <= ~press_kp;
+end
+
 // Key press handlers
-always @(negedge rst or negedge key_pause/* or negedge key_program*/) begin
-	/*if (!key_program)
-		program_mode <= ~program_mode;
-	else */if (!rst)
+always @(negedge rst or negedge key_pause) begin
+	/*if (!key_program) begin
+		//if (!program_key_press) begin
+			program_key_press <= ~program_key_press;  
+			program_mode <= ~program_mode;
+	end else*/ if (!rst)
 		//pause <= (program_mode) ? pause : 0;
 		pause <= 0;
 	else if (!key_pause)
 		pause <= ~pause;
-	/*case (keys)
-		4'b1110: pause <= 0;
-		4'b1101: pause <= ~pause;
-		4'b1011: program_mode <= ~program_mode;
-		default: pause <= pause;    
-	endcase*/
-	/*if (!rst)
-		pause <= 0;
-	else if (!key_pause)
-		pause <= ~pause;*/
 end
 
 reg [20:0] digit_count = 0;
@@ -113,5 +135,32 @@ function[7:0] add_dot;
 	input [7:0] number;
 	add_dot = {1'b0, number[6:0]};
 endfunction
+
+endmodule
+
+module debounce(input pb_1,clk,output pb_out);
+	wire slow_clk;
+	wire Q1,Q2,Q2_bar;
+	clock_div u1(clk,slow_clk);
+	my_dff d1(slow_clk, pb_1,Q1 );
+	my_dff d2(slow_clk, Q1,Q2 );
+	assign Q2_bar = ~Q2;
+	assign pb_out = Q1 & Q2_bar;
+endmodule
+// Slow clock for debouncing 
+module clock_div(input Clk_100M, output reg slow_clk);
+    reg [26:0]counter=0;
+    always @(posedge Clk_100M)
+    begin
+        counter <= (counter>=249999) ? 1'b0 : counter + 1'b1;
+        slow_clk <= (counter < 125000) ? 1'b0: 1'b1;
+    end
+endmodule
+// D-flip-flop for debouncing module 
+module my_dff(input DFF_CLOCK, D, output reg Q);
+
+    always @ (posedge DFF_CLOCK) begin
+        Q <= D;
+    end
 
 endmodule
