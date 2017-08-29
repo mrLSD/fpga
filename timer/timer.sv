@@ -40,8 +40,11 @@ always @(posedge clk or negedge rst) begin
 	end
 end
 
-always @(negedge key_pause) begin
-	pause <= ~pause;
+always @(negedge key_pause or negedge rst) begin
+	if (!rst)
+		pause <= 0;
+	else if (!key_pause)
+		pause <= ~pause;
 end
 
 reg [20:0] digit_count = 0;
