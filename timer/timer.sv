@@ -48,9 +48,9 @@ always @(posedge clk) begin
 		case (digit_block)
 			`DIGIT_BLOCK_1: number <= mod10(seconds);
 			`DIGIT_BLOCK_2: number <= div10(seconds);
-			`DIGIT_BLOCK_3: number <= mod10(minutes);
+			`DIGIT_BLOCK_3: number <= add_dot(mod10(minutes));
 			`DIGIT_BLOCK_4: number <= div10(minutes);
-			`DIGIT_BLOCK_5: number <= mod10(hours);
+			`DIGIT_BLOCK_5: number <= add_dot(mod10(hours));
 			`DIGIT_BLOCK_6: number <= div10(hours);
 			default: number <= `NUMBER_7;
 		endcase
@@ -83,6 +83,11 @@ function[7:0] mod10;
 		9:  mod10 = `NUMBER_9;
 		default: mod10 = `NUMBER_0;
 	endcase
+endfunction
+
+function[7:0] add_dot;
+	input [7:0] number;
+	add_dot = {1'b0, number[6:0]};
 endfunction
 
 endmodule
