@@ -8,9 +8,8 @@ output [5:0] digit_block;
 
 reg [7:0] number;
 reg [5:0] digit_block = `DIGIT_BLOCK_1;
-reg [`CLOCK_LIMIT:0] count = 0;
+reg [25:0] count = 0;
 reg [5:0] hours, minutes, seconds = 0;
-reg [3:0] position;
 
 always @(posedge clk or negedge rst) begin
 	if (!rst) begin
@@ -18,9 +17,9 @@ always @(posedge clk or negedge rst) begin
 		seconds <= 0;
 		minutes <= 0;
 		hours <= 0;
-	end else /*if (timer_enabled)*/ begin
+	end else begin
 		count <= count + 1'b1;
-		if (count[`CLOCK_LIMIT:`CLOCK_LIMIT-2] == 6) begin
+		if (count == `CLOCK_TIME_LIMIT) begin
 			count <= 0;						
 			if (seconds == 59) begin
 				seconds <= 0;
@@ -43,6 +42,7 @@ reg [20:0] digit_count = 0;
 always @(posedge clk) begin
 	if (digit_count == `DIGIT_COUNT_LIMIT) begin
 		digit_count <= 0;
+		// Circle shifting
 		digit_block = {digit_block[4:0], digit_block[5]};
 		
 		case (digit_block)
