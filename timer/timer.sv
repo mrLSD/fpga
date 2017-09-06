@@ -50,8 +50,8 @@ always @(posedge clk) begin
 			`DIGIT_BLOCK_2: number <= div10(seconds);
 			`DIGIT_BLOCK_3: number <= mod10(minutes);
 			`DIGIT_BLOCK_4: number <= div10(minutes);
-			`DIGIT_BLOCK_5: number <= `NUMBER_5;
-			`DIGIT_BLOCK_6: number <= `NUMBER_6;
+			`DIGIT_BLOCK_5: number <= mod10(hours);
+			`DIGIT_BLOCK_6: number <= div10(hours);
 			default: number <= `NUMBER_7;
 		endcase
 		
