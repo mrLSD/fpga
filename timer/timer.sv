@@ -24,13 +24,14 @@ always @(posedge clk or negedge rst) begin
 			count <= 0;						
 			if (seconds == 59) begin
 				seconds <= 0;
-				minutes <= minutes + 1'b1;
-				if (minutes == 60) begin
+				if (minutes == 59) begin
 					minutes <= 0;
-					hours <= hours + 1'b1;
-					if (hours == 24)
+					if (hours == 23)
 						hours <= 0; 
-				end 
+					else
+						hours <= hours + 1'b1;
+				end else
+					minutes <= minutes + 1'b1;
 			end else
 				seconds <= seconds + 1'b1;
 		end 
