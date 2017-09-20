@@ -21,9 +21,8 @@ always @(posedge clk or negedge rst) begin
 	end else /*if (timer_enabled)*/ begin
 		count <= count + 1'b1;
 		if (count[`CLOCK_LIMIT:`CLOCK_LIMIT-2] == 6) begin
-			count <= 0;
-			seconds <= seconds + 1'b1;			
-			if (seconds == 60) begin
+			count <= 0;						
+			if (seconds == 59) begin
 				seconds <= 0;
 				minutes <= minutes + 1'b1;
 				if (minutes == 60) begin
@@ -32,7 +31,8 @@ always @(posedge clk or negedge rst) begin
 					if (hours == 24)
 						hours <= 0; 
 				end 
-			end 
+			end else
+				seconds <= seconds + 1'b1;
 		end 
 	end
 end
@@ -45,8 +45,8 @@ always @(posedge clk) begin
 		digit_block = {digit_block[4:0], digit_block[5]};
 		
 		case (digit_block)
-			`DIGIT_BLOCK_1: number <= `NUMBER_1;
-			`DIGIT_BLOCK_2: number <= `NUMBER_2;
+			`DIGIT_BLOCK_1: number <= mod10(seconds);
+			`DIGIT_BLOCK_2: number <= div10(seconds);
 			`DIGIT_BLOCK_3: number <= `NUMBER_3;
 			`DIGIT_BLOCK_4: number <= `NUMBER_4;
 			`DIGIT_BLOCK_5: number <= `NUMBER_5;
