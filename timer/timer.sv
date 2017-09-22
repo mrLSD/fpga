@@ -1,20 +1,20 @@
 `include "const.sv"
 
-module timer (
-	input clk, rst,
-	output reg [7:0] number,	
-	output reg [5:0] digit_block
-);
+module timer (clk, rst, number, digit_block);
 
-reg [`CLOCK_LIMIT:0] count = 1'b0;
-reg [5:0] hours, minutes, seconds = 1'b0;
-reg timer_enabled = 1'b0;
+input clk, rst;
+output [7:0] number;
+output [5:0] digit_block;
+
+reg [7:0] number;
+reg [5:0] digit_block = `DIGIT_BLOCK_1;
+reg [`CLOCK_LIMIT:0] count = 0;
+reg [5:0] hours, minutes, seconds = 0;
 reg [3:0] position;
 
 always @(posedge clk or negedge rst) begin
 	if (!rst) begin
 		count <= 0;
-//		timer_enabled <= 0;
 		seconds <= 0;
 		minutes <= 0;
 		hours <= 0;
@@ -37,22 +37,43 @@ always @(posedge clk or negedge rst) begin
 	end
 end
 
-reg [25:0] cnt = 0;
+reg [20:0] digit_count = 0;
 
+always @(posedge clk) begin
+	if (digit_count == `DIGIT_COUNT_LIMIT) begin
+		digit_count <= 0;
+		digit_block = {digit_block[4:0], digit_block[5]};
+		
+		case (digit_block)
+			`DIGIT_BLOCK_1: number <= `NUMBER_1;
+			`DIGIT_BLOCK_2: number <= `NUMBER_2;
+			`DIGIT_BLOCK_3: number <= `NUMBER_3;
+			`DIGIT_BLOCK_4: number <= `NUMBER_4;
+			`DIGIT_BLOCK_5: number <= `NUMBER_5;
+			`DIGIT_BLOCK_6: number <= `NUMBER_6;
+			default: number <= `NUMBER_7;
+		endcase
+		
+	end else
+		digit_count <= digit_count + 1'b1;
+ 
+end
+
+/*
 always @(count) begin
-	if (count[15] == 1) begin
+	if (count % 5000 == 0) begin
 		if (cnt >= 6)
 			cnt <= 0;
 		else
 			cnt <= cnt +1;
 	end
 	case (cnt)
-		3'b000: digit_block <= 6'b111110;
-		3'b001: digit_block <= 6'b111101;
-		3'b010: digit_block <= 6'b111011;
-		3'b011: digit_block <= 6'b110111;
-		3'b100: digit_block <= 6'b101111;
-		3'b101: digit_block <= 6'b011111;
+		0: digit_block <= 6'b111110;
+		1: digit_block <= 6'b111101;
+		3: digit_block <= 6'b111011;
+		4: digit_block <= 6'b110111;
+		5: digit_block <= 6'b101111;
+		6: digit_block <= 6'b011111;
 		default: digit_block <= 6'b011111;
 	endcase
 	//digit_block = {digit_block[4:0], digit_block[5]};
@@ -67,7 +88,7 @@ always @(count) begin
 		default: number <= `NUMBER_7;
 	endcase
 end
-/*
+
 always @(digit_block) begin
 	case (digit_block)
 		6'b111110: number = `NUMBER_1;
