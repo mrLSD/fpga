@@ -6,7 +6,7 @@ module timer (
 	output reg [5:0] digit_block
 );
 
-reg [26:0] count = 1'b0;
+reg [`CLOCK_LIMIT:0] count = 1'b0;
 reg [5:0] hours, minutes, seconds = 1'b0;
 reg timer_enabled = 1'b0;
 
@@ -19,7 +19,7 @@ always @(posedge clk or negedge rst) begin
 		hours <= 0;
 	end else /*if (timer_enabled)*/ begin
 		count <= count + 1'b1;
-		if (count[`CLOCK_LIMIT] == 1'b1) begin
+		if (count[`CLOCK_LIMIT:`CLOCK_LIMIT-1] == 2'b11) begin
 			seconds <= seconds + 1'b1;
 			if (seconds == 60) begin
 				seconds <= 0;

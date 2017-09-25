@@ -4,7 +4,7 @@
 #
 
 run:
-	@iverilog -otimer_test timer_test.v && ./timer_test
+	@iverilog -otimer_test timer_test.sv && ./timer_test
 
 compile:
 	@quartus_map --read_settings_files=on --write_settings_files=off timer -c timer
