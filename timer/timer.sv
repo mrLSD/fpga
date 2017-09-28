@@ -58,4 +58,25 @@ always @(seconds) begin
 	endcase
 end
 
+function[7:0] div10;
+	input [5:0] a;
+	div10 = mod10(a / 10);
+endfunction	
+
+function[7:0] mod10;
+	input [5:0] a;
+	case (a % 10)
+		1:  mod10 = `NUMBER_1;
+		2:  mod10 = `NUMBER_2;
+		3:  mod10 = `NUMBER_3;
+		4:  mod10 = `NUMBER_4;
+		5:  mod10 = `NUMBER_5;
+		6:  mod10 = `NUMBER_6;
+		7:  mod10 = `NUMBER_7;
+		8:  mod10 = `NUMBER_8;
+		9:  mod10 = `NUMBER_9;
+		default: mod10 = `NUMBER_0;
+	endcase
+endfunction
+
 endmodule
