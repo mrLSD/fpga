@@ -19,8 +19,9 @@ always @(posedge clk or negedge rst) begin
 		hours <= 0;
 	end else /*if (timer_enabled)*/ begin
 		count <= count + 1'b1;
-		if (count[`CLOCK_LIMIT:`CLOCK_LIMIT-1] == 2'b11) begin
-			seconds <= seconds + 1'b1;
+		if (count[`CLOCK_LIMIT:`CLOCK_LIMIT-2] == 6) begin
+			count <= 0;
+			seconds <= seconds + 1'b1;			
 			if (seconds == 60) begin
 				seconds <= 0;
 				minutes <= minutes + 1'b1;
