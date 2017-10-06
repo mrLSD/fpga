@@ -31,6 +31,8 @@ timer t1(clk, rst, number, digit_block);
 
 initial begin
 	clk = 0;
+	$display("div: %d", ((10400000 % 100000) == 0));
+	
 	$display("div 50: %b", div10(50));
 	$display("div 51: %b", div10(51));
 	$display("div 5:  %b", div10(5));
