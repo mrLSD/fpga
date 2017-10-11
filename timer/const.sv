@@ -8,3 +8,4 @@
 `define NUMBER_7 'b11111000
 `define NUMBER_8 'b10000000
 `define NUMBER_9 'b10010000
+`define CLOCK_LIMIT 24
