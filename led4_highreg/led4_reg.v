@@ -9,7 +9,9 @@ reg [3:0] circle_count;
 initial begin
 	led = 0;
 	count = 0;
+	circle_count = 0;
 	led <= ~led;
+	$monitor($time, " led = %b count = %d", led, circle_count);
 end
 
 reg [27:0] count;
@@ -17,7 +19,7 @@ reg [27:0] count;
 always @(posedge clk)
 begin
 	count <= count + 1;
-	if (count[24] == 1) begin	
+	if (count[23] == 1) begin	
 		count <= 0;
 		circle_count <= circle_count + 1;
 	end
@@ -30,10 +32,7 @@ always @(circle_count)
 begin
 	case (circle_count)
 		0: led <= BASE_LED_SEQUENCE;
-		1: led <= (led << 1);
-		2: led <= (led << 2);
-		3: led <= (led << 3);
-		4: led <= (led << 4);
+		1,2,3,4: led <= (led << 1);
 //		1:  led <= 12'b000111011010;
 //		2:  led <= 12'b001110110100;
 //		3:  led <= 12'b011101101000;

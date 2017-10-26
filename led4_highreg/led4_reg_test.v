@@ -1,18 +1,19 @@
-module reglighn(
-	input clk, 
-	output [11:0] led
-);
-
+`include "led4_reg.v"
+/*
+module reglight(clk, regled);
 parameter BASE_LED_SEQUENCE = 12'b000011101101;
+input clk;
+output [11:0] regled;
+
 
 reg [3:0] count;	
-reg [11:0] led;
+reg [11:0] regled;
 
 initial begin
 	count = 0;
-	led = 0;
-	led = ~led;
-        $monitor($time, " led = %b count = %d", led, count);
+	regled = 0;
+	regled = ~regled;
+	$monitor($time, " led = %b count = %d", regled, count);
 end
 
 always @(posedge clk) begin
@@ -25,44 +26,43 @@ end
 always @(count)
 begin
 	case (count)
-		0: led <= BASE_LED_SEQUENCE;
-		1,2,3,4: led <= (led << 1);
-/*
-		1: led <= (BASE_LED_SEQUENCE << 1);
-		2: led <= (BASE_LED_SEQUENCE << 2);
-		3: led <= (BASE_LED_SEQUENCE << 3);
-		4: led <= (BASE_LED_SEQUENCE << 4);
-*/
-//		1:  led <= 12'b000111011010;
-//		2:  led <= 12'b001110110100;
-//		3:  led <= 12'b011101101000;
-//		4:  led <= 12'b111011010000;
-		5:  led <= 12'b110110100001;
-		6:  led <= 12'b101101000011;
-		7:  led <= 12'b011010000111;
-		8:  led <= 12'b110100001110;
-		9:  led <= 12'b101000011101;
-		10: led <= 12'b010000111011;
-		11: led <= 12'b100001110110;
-		default: led <= 12'b000_111_111_111;
+		0: regled <= BASE_LED_SEQUENCE;
+		1,2,3,4: regled <= (regled << 1);
+
+//		1: regled <= (BASE_LED_SEQUENCE << 1);
+//		2: regled <= (BASE_LED_SEQUENCE << 2);
+//		3: regled <= (BASE_LED_SEQUENCE << 3);
+//		4: regled <= (BASE_LED_SEQUENCE << 4);
+
+//		1:  regled <= 12'b000111011010;
+//		2:  regled <= 12'b001110110100;
+//		3:  regled <= 12'b011101101000;
+//		4:  regled <= 12'b111011010000;
+		5:  regled <= 12'b110110100001;
+		6:  regled <= 12'b101101000011;
+		7:  regled <= 12'b011010000111;
+		8:  regled <= 12'b110100001110;
+		9:  regled <= 12'b101000011101;
+		10: regled <= 12'b010000111011;
+		11: regled <= 12'b100001110110;
+		default: regled <= 12'b000_111_111_111;
 	endcase
 end
 
 endmodule
-
+*/
 module main();
 	
 reg clk;
-wire [11:0] led;
+wire [11:0] leds;
 
-reglighn reglighn(clk, led);
+led4_reg reglight(clk, leds);
 
 initial begin
 	clk = 0;
-//	$monitor($time, " led = %b", led);
-	forever #5 clk = ~clk; 
+	forever #1 clk = ~clk; 
 end
 
-initial #150 $finish; 
+initial #160_000_000 $finish; 
 
 endmodule
