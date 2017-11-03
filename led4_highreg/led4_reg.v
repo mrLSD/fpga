@@ -8,6 +8,7 @@ reg [3:0] circle_count;
 
 initial begin
 	led = 0;
+	count = 0;
 	led <= ~led;
 end
 
@@ -25,25 +26,25 @@ begin
 		circle_count <= 0;		
 end
 
-always @(posedge clk)
+always @(circle_count)
 begin
 	case (circle_count)
 		0: led <= BASE_LED_SEQUENCE;
-		1: led <= ~(BASE_LED_SEQUENCE << 1);
-		2: led <= ~(BASE_LED_SEQUENCE << 2);
-		3: led <= ~(BASE_LED_SEQUENCE << 3);
-		4: led <= ~(BASE_LED_SEQUENCE << 4);
-//		1:  led <= ~12'b000111011010;
-//		2:  led <= ~12'b001110110100;
-//		3:  led <= ~12'b011101101000;
-//		4:  led <= ~12'b111011010000;
-		5:  led <= ~12'b110110100001;
-		6:  led <= ~12'b101101000011;
-		7:  led <= ~12'b011010000111;
-		8:  led <= ~12'b110100001110;
-		9:  led <= ~12'b101000011101;
-		10: led <= ~12'b010000111011;
-		11: led <= ~12'b100001110110;
+		1: led <= (led << 1);
+		2: led <= (led << 2);
+		3: led <= (led << 3);
+		4: led <= (led << 4);
+//		1:  led <= 12'b000111011010;
+//		2:  led <= 12'b001110110100;
+//		3:  led <= 12'b011101101000;
+//		4:  led <= 12'b111011010000;
+		5:  led <= 12'b110110100001;
+		6:  led <= 12'b101101000011;
+		7:  led <= 12'b011010000111;
+		8:  led <= 12'b110100001110;
+		9:  led <= 12'b101000011101;
+		10: led <= 12'b010000111011;
+		11: led <= 12'b100001110110;
 		default: led <= 12'b000_111_111_111;
 	endcase
 end
