@@ -4,8 +4,17 @@
 #
 
 run:
-	@iverilog -oled4_reg_test led4_reg_test.v && ./led4_reg_test
+	@iverilog -otimer_test timer_test.v && ./timer_test
 
 compile:
-	@quartus_map --read_settings_files=on --write_settings_files=off led4_reg -c led4_reg
+	@quartus_map --read_settings_files=on --write_settings_files=off timer -c timer
 
+build:
+	@quartus_map --read_settings_files=on --write_settings_files=off timer -c timer
+	@quartus_fit --read_settings_files=off --write_settings_files=off timer -c timer
+	@quartus_asm --read_settings_files=off --write_settings_files=off timer -c timer
+	@quartus_sta timer -c timer
+
+
+programmer:
+	@quartus_pgm -c usb-blaster -m jtag -o "p;output_files/timer.sof"
