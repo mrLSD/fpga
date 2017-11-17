@@ -15,3 +15,6 @@ build:
 	@quartus_asm --read_settings_files=off --write_settings_files=off led4_reg -c led4_reg
 	@quartus_sta led4_reg -c led4_reg
 
+
+programmer:
+	@quartus_pgm -c usb-blaster -m jtag -o "p;output_files/led4_reg.sof"
