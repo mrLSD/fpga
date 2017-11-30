@@ -13,11 +13,11 @@ reg timer_enabled = 1'b0;
 always @(posedge clk or negedge rst) begin
 	if (!rst) begin
 		count <= 0;
-		timer_enabled <= 0;
+//		timer_enabled <= 0;
 		seconds <= 0;
 		minutes <= 0;
 		hours <= 0;
-	end else if (timer_enabled) begin
+	end else /*if (timer_enabled)*/ begin
 		count <= count + 1'b1;
 		if (count == 25_000_000) begin
 			seconds <= seconds + 1'b1;
@@ -36,14 +36,14 @@ always @(posedge clk or negedge rst) begin
 end
 
 always @(count) begin
-	if (count[16:13] == 0)
+	if (count[15:12] == 0)
 		digit_block <= 6'b111110;
 	else
 		digit_block <= {digit_block[4:0], digit_block[5]};
 end
 
 always @(seconds) begin
-	number <= `NUMBER_7;
+	number <= `NUMBER_8;
 end
 
 endmodule

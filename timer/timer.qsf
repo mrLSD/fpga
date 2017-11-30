@@ -64,11 +64,11 @@ set_location_assignment PIN_136 -to digit_block[5]
 
 set_location_assignment PIN_127 -to number[0]
 set_location_assignment PIN_126 -to number[1]
-set_location_assignment PIN_125 -to dataout[2]
-set_location_assignment PIN_124 -to dataout[3]
-set_location_assignment PIN_121 -to dataout[4]
-set_location_assignment PIN_120 -to dataout[5]
-set_location_assignment PIN_119 -to dataout[6]
-set_location_assignment PIN_115 -to dataout[7]
+set_location_assignment PIN_125 -to number[2]
+set_location_assignment PIN_124 -to number[3]
+set_location_assignment PIN_121 -to number[4]
+set_location_assignment PIN_120 -to number[5]
+set_location_assignment PIN_119 -to number[6]
+set_location_assignment PIN_115 -to number[7]
 
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
