@@ -2,8 +2,8 @@
 
 module timer (
 	input clk, rst,
-	output reg [7:0] dataout,
-	output led_bit
+	output reg [7:0] number,	
+	output reg [5:0] digit_block
 );
 
 reg [24:0] count = 1'b0;
@@ -32,33 +32,18 @@ always @(posedge clk or negedge rst) begin
 				end 
 			end 
 		end 
-		/*
-		case ( count[25:22] )
-		  0:  dataout <= `NUMBER_1;  
-		  1:  dataout <= `NUMBER_2;
-		  2:  dataout <= `NUMBER_3; 
-		  3: dataout<=8'b10110000;
-		  4: dataout<=8'b10011001;
-		  5: dataout<=8'b10010010;
-		  6: dataout<=8'b10000010;
-		  7: dataout<=8'b11111000;
-		  8: dataout<=8'b10000000;
-		  9: dataout<=8'b10010000;
-		  10:dataout<=8'b10001000;
-		  11:dataout<=8'b10000011;
-		  12:dataout<=8'b11000110;
-		  13:dataout<=8'b10100001;
-		  14:dataout<=8'b10000110;
-		  15:dataout<=8'b10001110; 
-		endcase*/
 	end
 end
 
 always @(count) begin
-	
+	if (count[16:13] == 0)
+		digit_block <= 6'b111110;
+	else
+		digit_block <= {digit_block[4:0], digit_block[5]};
 end
 
-
-assign led_bit = 1'b0;
+always @(seconds) begin
+	number <= `NUMBER_7;
+end
 
 endmodule

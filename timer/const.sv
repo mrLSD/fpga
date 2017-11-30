@@ -1,5 +1,10 @@
-`define NUMBER_1 'b11000000 
-`define NUMBER_2 'b11000000
-`ifndef NUMBER_3
-	`define NUMBER_3 'b11000000
-`endif 
+`define NUMBER_0 'b11000000 
+`define NUMBER_1 'b11111001
+`define NUMBER_2 'b10100100
+`define NUMBER_3 'b10110000
+`define NUMBER_4 'b10011001
+`define NUMBER_5 'b10010010
+`define NUMBER_6 'b10000010
+`define NUMBER_7 'b11111000
+`define NUMBER_8 'b10000000
+`define NUMBER_9 'b10010000
