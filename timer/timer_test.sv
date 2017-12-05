@@ -1,46 +1,64 @@
-`include "timer.sv"
-
 module main();
 
-function[7:0] mod10;
-	input [5:0] a;
-	mod10 = div10(a / 10);
-endfunction	
+reg clk;
+reg state;
+reg pb;
+wire pb_out;
 
-function[7:0] div10;
-	input [5:0] a;
-	case (a % 10)
-		1:  div10 = `NUMBER_1;
-		2:  div10 = `NUMBER_2;
-		3:  div10 = `NUMBER_3;
-		4:  div10 = `NUMBER_4;
-		5:  div10 = `NUMBER_5;
-		6:  div10 = `NUMBER_6;
-		7:  div10 = `NUMBER_7;
-		8:  div10 = `NUMBER_8;
-		9:  div10 = `NUMBER_9;
-		default: div10 = `NUMBER_0;
-	endcase
-endfunction
-	
-reg clk, rst;
-wire [7:0] number;
-wire [5:0] digit_block;
-
-timer t1(clk, rst, number, digit_block);
+debounce db(pb, clk, pb_out);
 
 initial begin
 	clk = 0;
-	$display("div: %d", ((10400000 % 100000) == 0));
-	
-	$display("div 50: %b", div10(50));
-	$display("div 51: %b", div10(51));
-	$display("div 5:  %b", div10(5));
-	$display("mod 51:  %b", mod10(51));
-	$monitor($time, "  %b", digit_block);
 	forever #1 clk = ~clk; 
 end
 
-initial #8200 $finish; 
+initial begin
+	clk = 0;
+	#2 pb = 0;
+	forever #3 pb = ~pb;
+end
 
+initial #40 $finish; 
+
+endmodule
+
+module debounce(input pb_1,clk,output pb_out);
+	wire slow_clk;
+	wire Q1,Q2,Q2_bar;
+	clock_div u1(clk,slow_clk);
+
+	dff d1(slow_clk, pb_1,Q1 );
+	dff d2(slow_clk, Q1,Q2 );
+	
+	initial begin
+		$monitor($time, " CLK: %b | PB: %b | %b == %b", slow_clk, pb_1, Q1, Q2);
+	end
+	
+	assign Q2_bar = ~Q2;
+	assign pb_out = Q1 & Q2_bar;
+endmodule
+
+// Slow clock for debouncing 
+module clock_div(input clk, output reg slow_clk);
+    reg [2:0]counter=0;
+    always @(posedge clk)
+    begin
+        counter <= (counter>=3) ? 1'b0 : counter + 1'b1;
+        slow_clk <= (counter < 2) ? 1'b0: 1'b1;
+    end
+endmodule
+
+module dff(
+	input clk,
+	input d,
+	output reg q
+);
+
+reg qq;
+
+always @(posedge clk) begin
+	q <= d;
+	qq <= q;
+	$display("DFF: %b <= %b | %b", q, d, qq);	
+end
 endmodule
