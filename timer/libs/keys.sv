@@ -10,7 +10,7 @@ parameter TIME_DELAY = 16;
 reg button_sync_0;
 // invert button to make button_sync_0 active high  
 always @(posedge clk) button_sync_0 <= ~button; 
-	
+
 reg button_sync_1;
 always @(posedge clk) button_sync_1 <= button_sync_0;
 
@@ -32,5 +32,5 @@ always @(posedge clk) begin
 			key_press <= ~key_press; 
 	end
 end
-	
+
 endmodule

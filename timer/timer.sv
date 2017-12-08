@@ -12,8 +12,24 @@ module timer (
 reg [25:0] count = 0;
 reg [5:0] hours, minutes, seconds = 0;
 reg pause = 0;
-reg press_kp = 0;
+reg program_mod = 0;
 wire keypress_pause;
+wire keypress_program;
+
+wire pause_mod = (!rst || program_mod);
+wire reset_mod = (rst || program_mod);
+assign info_led = {2'b11, ~pause};
+
+always @(posedge pause_mod or posedge keypress_pause) begin
+	if (pause_mod)
+		pause <= 0;
+	else if (keypress_pause)
+		pause <= ~pause; 	
+end
+
+always @(posedge keypress_program) begin
+	program_mod <= ~program_mod;
+end
 
 initial begin
 	digit_block <= `DIGIT_BLOCK_1;
@@ -25,9 +41,15 @@ debouncer debouncer_keypause (
 	.key_press(keypress_pause)
 );
 
+debouncer debouncer_keyprogram (
+	.clk(clk),
+	.button(key_program),
+	.key_press(keypress_program)
+);
+
 // Main CLK loop
-always @(posedge clk or negedge rst) begin
-	if (!rst) begin
+always @(posedge clk or negedge reset_mod) begin
+	if (!reset_mod) begin
 		count <= 0;
 		seconds <= 0;
 		minutes <= 0;
@@ -52,16 +74,13 @@ always @(posedge clk or negedge rst) begin
 	end
 end
 
-assign info_led = {rst, keypress_pause, 1'b1};
-
-reg [24:0] program_led_counter = 0;
+reg [23:0] program_led_counter = 0;
 
 always @(posedge clk) begin
-	if (press_kp) begin
+	if (program_mod) begin
 		program_led_counter <= program_led_counter + 1'b1;
-		if (program_led_counter[24] == 1) begin
+		if (&program_led_counter) begin
 			program_led_counter <= 0;
-			//program_led <= 3'b000;
 			if (program_led == 3'b111)
 				program_led <= 3'b110;
 			else
@@ -71,18 +90,13 @@ always @(posedge clk) begin
 		program_led <= 3'b111; 
 end
 
-// Key press handlers
-always @(negedge rst or negedge keypress_pause) begin
-	if (!rst)
-		pause <= 0;
-	else if (!keypress_pause)
-		pause <= ~pause;
-end
-
 reg [20:0] digit_count = 0;
+wire digit_mode = (clk && ~program_mod); 
 
-always @(posedge clk) begin
-	if (digit_count == `DIGIT_COUNT_LIMIT) begin
+always @(posedge clk or negedge digit_mode) begin
+	if (!digit_mode)
+		digit_block <= 6'b111111;
+	else if (digit_count == `DIGIT_COUNT_LIMIT) begin
 		digit_count <= 0;
 		// Circle shifting
 		digit_block = {digit_block[4:0], digit_block[5]};
