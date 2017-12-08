@@ -1,4 +1,5 @@
 `include "const.sv"
+`include "libs/keys.sv"
 
 module timer (
 	input wire 		clk, rst, key_pause, key_program,
@@ -12,10 +13,17 @@ reg [25:0] count = 0;
 reg [5:0] hours, minutes, seconds = 0;
 reg pause = 0;
 reg press_kp = 0;
+wire keypress_pause;
 
 initial begin
 	digit_block <= `DIGIT_BLOCK_1;
 end
+
+debouncer debouncer_keypause (
+	.clk(clk),
+	.button(key_pause),
+	.key_press(keypress_pause)
+);
 
 // Main CLK loop
 always @(posedge clk or negedge rst) begin
@@ -44,7 +52,7 @@ always @(posedge clk or negedge rst) begin
 	end
 end
 
-assign info_led = {rst, key_pause, ~press_kp};
+assign info_led = {rst, keypress_pause, 1'b1};
 
 reg [24:0] program_led_counter = 0;
 
@@ -63,23 +71,11 @@ always @(posedge clk) begin
 		program_led <= 3'b111; 
 end
 
-wire key_d;
-debounce db(key_program, clk, key_d);
-
-always @(negedge key_d) begin
-	press_kp <= ~press_kp;
-end
-
 // Key press handlers
-always @(negedge rst or negedge key_pause) begin
-	/*if (!key_program) begin
-		//if (!program_key_press) begin
-			program_key_press <= ~program_key_press;  
-			program_mode <= ~program_mode;
-	end else*/ if (!rst)
-		//pause <= (program_mode) ? pause : 0;
+always @(negedge rst or negedge keypress_pause) begin
+	if (!rst)
 		pause <= 0;
-	else if (!key_pause)
+	else if (!keypress_pause)
 		pause <= ~pause;
 end
 
@@ -100,10 +96,8 @@ always @(posedge clk) begin
 			`DIGIT_BLOCK_6: number <= div10(hours);
 			default: number <= `NUMBER_7;
 		endcase
-		
 	end else
 		digit_count <= digit_count + 1'b1;
- 
 end
 
 // Calculate first part of number
@@ -135,32 +129,5 @@ function[7:0] add_dot;
 	input [7:0] number;
 	add_dot = {1'b0, number[6:0]};
 endfunction
-
-endmodule
-
-module debounce(input pb_1,clk,output pb_out);
-	wire slow_clk;
-	wire Q1,Q2,Q2_bar;
-	clock_div u1(clk,slow_clk);
-	my_dff d1(slow_clk, pb_1,Q1 );
-	my_dff d2(slow_clk, Q1,Q2 );
-	assign Q2_bar = ~Q2;
-	assign pb_out = Q1 & Q2_bar;
-endmodule
-// Slow clock for debouncing 
-module clock_div(input Clk_100M, output reg slow_clk);
-    reg [26:0]counter=0;
-    always @(posedge Clk_100M)
-    begin
-        counter <= (counter>=249999) ? 1'b0 : counter + 1'b1;
-        slow_clk <= (counter < 125000) ? 1'b0: 1'b1;
-    end
-endmodule
-// D-flip-flop for debouncing module 
-module my_dff(input DFF_CLOCK, D, output reg Q);
-
-    always @ (posedge DFF_CLOCK) begin
-        Q <= D;
-    end
 
 endmodule

@@ -20,9 +20,9 @@ end
 initial begin
 	clk = 0;
 	#2 button = 0;
-	forever #3 button = ~button;
+	forever #20 button = ~button;
 end
 
-initial #40 $finish; 
+initial #300 $finish; 
 
 endmodule
