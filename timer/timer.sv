@@ -6,7 +6,7 @@ module timer (
 	output wire 	[2:0] info_led,
 	output reg		[2:0] program_led, 
 	output reg 		[7:0] number,
-	output reg 		[5:0] digit_block
+	output [5:0] digit_block
 );
 
 reg [25:0] count = 0;
@@ -32,7 +32,7 @@ always @(posedge keypress_program) begin
 end
 
 initial begin
-	digit_block <= `DIGIT_BLOCK_1;
+	//digit_block <= `DIGIT_BLOCK_1;
 end
 
 debouncer debouncer_keypause (
@@ -91,17 +91,17 @@ always @(posedge clk) begin
 end
 
 reg [20:0] digit_count = 0;
-wire digit_mode = (clk && ~program_mod); 
+reg [5:0] inner_digit_block = `DIGIT_BLOCK_1; 
+assign digit_block = (!program_mod) ? inner_digit_block : `DIGIT_BLOCK_EMPTY; 
 
-always @(posedge clk or negedge digit_mode) begin
-	if (!digit_mode)
-		digit_block <= 6'b111111;
-	else if (digit_count == `DIGIT_COUNT_LIMIT) begin
+always @(posedge clk) begin
+	if (digit_count == `DIGIT_COUNT_LIMIT) begin
 		digit_count <= 0;
+		// digit_block <= 6'b111111;
 		// Circle shifting
-		digit_block = {digit_block[4:0], digit_block[5]};
+		inner_digit_block = {inner_digit_block[4:0], inner_digit_block[5]};
 		
-		case (digit_block)
+		case (inner_digit_block)
 			`DIGIT_BLOCK_1: number <= mod10(seconds);
 			`DIGIT_BLOCK_2: number <= div10(seconds);
 			`DIGIT_BLOCK_3: number <= add_dot(mod10(minutes));
