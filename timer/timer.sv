@@ -16,23 +16,19 @@ reg program_mod = 0;
 wire keypress_pause;
 wire keypress_program;
 
-wire pause_mod = (!rst || program_mod);
+wire pause_mod = (!keypress_pause || program_mod);
 wire reset_mod = (rst || program_mod);
 assign info_led = {2'b11, ~pause};
 
-always @(posedge pause_mod or posedge keypress_pause) begin
-	if (pause_mod)
+always @(negedge reset_mod or negedge pause_mod) begin
+	if (!reset_mod)
 		pause <= 0;
-	else if (keypress_pause)
+	else if (!pause_mod)
 		pause <= ~pause; 	
 end
 
 always @(posedge keypress_program) begin
 	program_mod <= ~program_mod;
-end
-
-initial begin
-	//digit_block <= `DIGIT_BLOCK_1;
 end
 
 debouncer debouncer_keypause (
