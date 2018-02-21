@@ -5,7 +5,9 @@ module vga(
    hsync,
    vsync
 );
-reg [7:0] arr1 [35:0] [15:0] = '{
+parameter string tst = "123";
+wire [0:7] arr1 [0:35] [0:15] = '{
+	'{8'hFF, 8'hFF, 8'h00, 8'h00, 8'hFF, 8'hFF, 8'h00, 8'h00, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF},
 	'{8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF},
 	'{8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF},
 	'{8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF},
@@ -35,11 +37,10 @@ reg [7:0] arr1 [35:0] [15:0] = '{
 	'{8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF},
 	'{8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF},
 	'{8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF},
-	'{8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF},
-	'{8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF},
-	'{8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF},
-	'{8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF},
-	'{8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF}, 
+	'{8'hFF, 8'h00, 8'hFF, 8'h00, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF},
+	'{8'hFF, 8'h00, 8'hFF, 8'h00, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF},
+	'{8'hFF, 8'h00, 8'hFF, 8'h00, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF},
+	'{8'hFF, 8'h00, 8'hFF, 8'h00, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF, 8'hFF}, 
 	'{  //-- 35
 		8'b00000000, //-- 0
 		8'b00000000, //-- 1
@@ -59,7 +60,7 @@ reg [7:0] arr1 [35:0] [15:0] = '{
 		8'b00000000  //-- f
 	},
 	'{
-		8'b00000000, //-- 0
+		8'b10000001, //-- 0
 		8'b00000000, //-- 1
 		8'b00000000, //-- 2
 		8'b01101100, //-- 3  ** **
@@ -74,7 +75,7 @@ reg [7:0] arr1 [35:0] [15:0] = '{
 		8'b00000000, //-- c
 		8'b00000000, //-- d
 		8'b00000000, //-- e
-		8'b00000000  //-- f
+		8'b10000001  //-- f
 	}
 };
 
@@ -142,8 +143,8 @@ assign hsync = (hcount > hsync_end);
 assign vsync = (vcount > vsync_end);
 assign disp_RGB = (dat_act) ?  data : 3'h00;       
 
-assign x_coord = (hcount - hdat_begin);
-assign y_coord = (vcount - vdat_begin);
+assign x_coord = (hcount - hdat_begin + 1);
+assign y_coord = (vcount - vdat_begin + 1);
 
 always @(posedge vga_clk)
 begin
@@ -151,7 +152,7 @@ begin
   2'd0: data <= h_dat;
   2'd1: data <= v_dat;
   2'd2: data <= (v_dat ^ h_dat);
-  2'd3: data <= v_dat;
+  2'd3: data <= h_dat;
 //  2'd3: data <= (v_dat ~^ h_dat);
  endcase
 end
@@ -172,20 +173,28 @@ begin
 	v_dat <= 3'h0;
 end
 
-reg [9:0]charXPosition;
-reg [9:0]charYPosition;
-reg [9:0]bitPosition;
+wire [9:0]charXPosition;
+wire [9:0]charYPosition;
+wire [9:0]bitXPosition;
+wire [9:0]bitYPosition;
+
+assign charXPosition = (x_coord / 8);
+assign charYPosition = (y_coord / 16); 
+assign bitXPosition = (x_coord % 8);
+assign bitYPosition = (y_coord % 16);
 
 always @(posedge vga_clk)
 begin
-	charXPosition <= x_coord/8 + 1;
-	if (charXPosition > 0 && charXPosition <= 2) begin
-		bitPosition <= x_coord % 8;
-		charYPosition <= y_coord/16 + 1;
-		if (charYPosition == 1) begin
+	h_dat <= 3'h0;
+	
+	if (charXPosition >= 2 && 
+		charXPosition <= 6 && 
+		charYPosition == 20
+	) begin
+		if (arr1[35][bitYPosition][bitXPosition]) begin
+			h_dat <= 3'h5;
 		end
 	end
 end
 
 endmodule
-

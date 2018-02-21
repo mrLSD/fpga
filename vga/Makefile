@@ -14,4 +14,4 @@ build:
 
 
 programmer:
-	@quartus_pgm -c usb-blaster -m jtag -o "p;vga.sof"
+	@quartus_pgm -c usb-blaster -m jtag -o "p;output_files/vga.sof"
