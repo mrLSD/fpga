@@ -5,8 +5,17 @@ module vga(
    hsync,
    vsync
 );
-parameter string tst = "SystemVerilog";
-wire [0:15] arr1 [0:255] [0:63] = '{
+parameter string txt [0:2] = '{
+	"SystemVerilo╚g@", 
+	"tst",
+	"New test"
+};
+parameter int txtBin [0:2] [0:5] = '{
+	'{8'd201, 8'd205, 8'd205, 8'd205, 8'd205, 8'd187},
+	'{8'd186, 8'd48,  8'd50,  8'd58,  8'd32,  8'd186},
+	'{8'd200, 8'd205, 8'd205, 8'd205, 8'd205, 8'd188}
+}; 
+wire [0:7] arr1 [0:255] [0:63] = '{
     '{8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h1f, 8'hf8, 8'h3f, 8'hfc, 8'h70, 8'h0e, 8'h67, 8'he6, 8'h6f, 8'hf6, 8'h6c, 8'h36, 8'h6c, 8'h06, 8'h6c, 8'h06, 8'h6c, 8'h06, 8'h6c, 8'h06, 8'h6c, 8'h36, 8'h6f, 8'hf6, 8'h67, 8'he6, 8'h70, 8'h0e, 8'h3f, 8'hfc, 8'h1f, 8'hf8, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00},  /* 0 */
     '{8'h00, 8'h00, 8'h0c, 8'h30, 8'h0c, 8'h30, 8'h0c, 8'h30, 8'h0c, 8'h30, 8'h00, 8'h00, 8'h3f, 8'hfc, 8'h3f, 8'hfc, 8'h30, 8'h00, 8'h30, 8'h00, 8'h30, 8'h00, 8'h30, 8'h00, 8'h30, 8'h00, 8'h30, 8'h00, 8'h30, 8'h00, 8'h3f, 8'he0, 8'h3f, 8'he0, 8'h30, 8'h00, 8'h30, 8'h00, 8'h30, 8'h00, 8'h30, 8'h00, 8'h30, 8'h00, 8'h30, 8'h00, 8'h30, 8'h00, 8'h3f, 8'hfc, 8'h3f, 8'hfc, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00},  /* 1 */
     '{8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h0f, 8'hf0, 8'h1f, 8'hf8, 8'h38, 8'h1c, 8'h30, 8'h0c, 8'h30, 8'h0c, 8'h30, 8'h00, 8'h30, 8'h00, 8'h30, 8'h00, 8'h30, 8'h00, 8'h3f, 8'he0, 8'h3f, 8'he0, 8'h30, 8'h00, 8'h30, 8'h00, 8'h30, 8'h00, 8'h30, 8'h00, 8'h30, 8'h0c, 8'h30, 8'h0c, 8'h38, 8'h1c, 8'h1f, 8'hf8, 8'h0f, 8'hf0, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00, 8'h00},  /* 2 */
@@ -329,8 +338,8 @@ assign hsync = (hcount > hsync_end);
 assign vsync = (vcount > vsync_end);
 assign disp_RGB = (dat_act) ?  data : 3'h00;       
 
-assign x_coord = (hcount - hdat_begin + 1);
-assign y_coord = (vcount - vdat_begin + 1);
+assign x_coord = (hcount - hdat_begin + 1'b1);
+assign y_coord = (vcount - vdat_begin + 1'b1);
 
 always @(posedge vga_clk)
 begin
@@ -339,44 +348,68 @@ begin
   2'd1: data <= v_dat;
   2'd2: data <= (v_dat ^ h_dat);
   2'd3: data <= h_dat;
-//  2'd3: data <= (v_dat ~^ h_dat);
  endcase
 end
 
+reg [0:15]bitMap2;
+
 always @(posedge vga_clk)
 begin
- if((x_coord >= 60 && x_coord < 140) &&
- 	(y_coord >= 40 && y_coord < 60) ||
- 	(x_coord >= 60 && x_coord < 80) &&
- 	(y_coord >= 40 && y_coord < 200) ||
- 	(x_coord >= 120 && x_coord < 140) &&
- 	(y_coord >= 40 && y_coord < 200) ||
- 	(x_coord >= 60 && x_coord < 140) &&
- 	(y_coord >= 180 && y_coord < 200)
- 	) 
-	v_dat <= 3'h6;   
- else 
 	v_dat <= 3'h0;
+	if (charYPosition >= 2 &&
+		charYPosition < 3 + 2 &&
+		charXPosition >= 2 && 
+		charXPosition < 6 + 2
+	) begin
+		bitMap2 <= {arr1[txtBin[charYPosition-2][charXPosition-2]][2*bitYPosition], arr1[txtBin[charYPosition-2][charXPosition-2]][2*bitYPosition + 1]};
+		if (bitMap2[bitXPosition]) begin
+			v_dat <= 3'h3;
+		end
+	end
 end
 
 wire [9:0]charXPosition;
 wire [9:0]charYPosition;
 wire [9:0]bitXPosition;
 wire [9:0]bitYPosition;
+reg [0:15]bitMap;
 
-assign charXPosition = (x_coord / 16);
-assign charYPosition = (y_coord / 32); 
-assign bitXPosition = (x_coord % 16);
-assign bitYPosition = (y_coord % 32);
+assign charXPosition = (x_coord / 10'd16);
+assign charYPosition = (y_coord / 10'd32); 
+assign bitXPosition = (x_coord % 10'd16);
+assign bitYPosition = (y_coord % 10'd32);
 
 always @(posedge vga_clk)
 begin
 	h_dat <= 3'h0;
 	
-	if (charXPosition == 2 && 
-		charYPosition == 3
+	if (charYPosition >= 6 &&
+		charYPosition < $size(txt) + 6 &&
+		charXPosition >= 2 
 	) begin
-		if (arr1[0][bitYPosition][bitXPosition]) begin
+		case (charYPosition-6)
+			5'd0: if (charXPosition < txt[0].len() + 2) begin
+				bitMap <= {
+					arr1[txt[0][charXPosition-2]] [2*bitYPosition], 
+					arr1[txt[0][charXPosition-2]] [2*bitYPosition + 1]
+				};
+			end
+			5'd1: if (charXPosition < txt[1].len() + 2) begin
+				bitMap <= {
+					arr1[txt[1][charXPosition-2]] [2*bitYPosition], 
+					arr1[txt[1][charXPosition-2]] [2*bitYPosition + 1]
+				};
+			end
+			5'd2: if (charXPosition < txt[2].len() + 2) begin
+				bitMap <= {
+					arr1[txt[2][charXPosition-2]] [2*bitYPosition], 
+					arr1[txt[2][charXPosition-2]] [2*bitYPosition + 1]
+				};
+			end
+			default: bitMap <= 32'd0;
+		endcase
+		
+		if (bitMap[bitXPosition]) begin
 			h_dat <= 3'h3;
 		end
 	end
