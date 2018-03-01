@@ -1,3 +1,5 @@
+`include "text/text.sv"
+
 module vga(
    clock,
    switch,
@@ -5,11 +7,6 @@ module vga(
    hsync,
    vsync
 );
-parameter string txt [0:2] = '{
-	"SystemVerilo╚g@", 
-	"tst",
-	"New test"
-};
 parameter int txtBin [0:2] [0:5] = '{
 	'{8'd201, 8'd205, 8'd205, 8'd205, 8'd205, 8'd187},
 	'{8'd186, 8'd48,  8'd50,  8'd58,  8'd32,  8'd186},
@@ -379,6 +376,7 @@ assign charYPosition = (y_coord / 10'd32);
 assign bitXPosition = (x_coord % 10'd16);
 assign bitYPosition = (y_coord % 10'd32);
 
+/*
 always @(posedge vga_clk)
 begin
 	h_dat <= 3'h0;
@@ -388,24 +386,18 @@ begin
 		charXPosition >= 2 
 	) begin
 		case (charYPosition-6)
-			5'd0: if (charXPosition < txt[0].len() + 2) begin
-				bitMap <= {
+			5'd0: bitMap <= (charXPosition < txt[0].len() + 2) ? {
 					arr1[txt[0][charXPosition-2]] [2*bitYPosition], 
 					arr1[txt[0][charXPosition-2]] [2*bitYPosition + 1]
-				};
-			end
-			5'd1: if (charXPosition < txt[1].len() + 2) begin
-				bitMap <= {
+				} : 32'd0;
+			5'd1: bitMap <= (charXPosition < txt[1].len() + 2) ? {
 					arr1[txt[1][charXPosition-2]] [2*bitYPosition], 
 					arr1[txt[1][charXPosition-2]] [2*bitYPosition + 1]
-				};
-			end
-			5'd2: if (charXPosition < txt[2].len() + 2) begin
-				bitMap <= {
+				} : 32'd0;
+			5'd2: bitMap <= (charXPosition < txt[2].len() + 2) ? {
 					arr1[txt[2][charXPosition-2]] [2*bitYPosition], 
 					arr1[txt[2][charXPosition-2]] [2*bitYPosition + 1]
-				};
-			end
+				} : 32'd0;
 			default: bitMap <= 32'd0;
 		endcase
 		
@@ -414,5 +406,13 @@ begin
 		end
 	end
 end
+*/
+
+render_text #(3'd1) render_text_instance (
+	.vga_clk(vga_clk),
+	.x_coord(x_coord),
+	.y_coord(y_coord),
+	.h_dat(h_dat)
+);
 
 endmodule
