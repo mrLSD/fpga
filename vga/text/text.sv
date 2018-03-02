@@ -9,6 +9,7 @@ module render_text(
 );
 
 parameter int T1 = 3'd4;
+parameter reg [0:7] FONT_16x32 [0:255] [0:63] = fonts::CyrKoiTerminus32x16;
 
 parameter string txt [0:2] = '{
 	"SystemVerilog: 17:30:01", 
@@ -38,16 +39,16 @@ begin
 	) begin
 		case (charYPosition-6)
 			5'd0: bitMap <= (charXPosition < txt[0].len() + 2) ? {
-					fonts::FONT1[txt[0][charXPosition-2]] [2*bitYPosition], 
-					fonts::FONT1[txt[0][charXPosition-2]] [2*bitYPosition + 1]
+					FONT_16x32[txt[0][charXPosition-2]] [2*bitYPosition], 
+					FONT_16x32[txt[0][charXPosition-2]] [2*bitYPosition + 1]
 				} : 32'd0;
 			5'd1: bitMap <= (charXPosition < txt[1].len() + 2) ? {
-					fonts::FONT1[txt[1][charXPosition-2]] [2*bitYPosition], 
-					fonts::FONT1[txt[1][charXPosition-2]] [2*bitYPosition + 1]
+					FONT_16x32[txt[1][charXPosition-2]] [2*bitYPosition], 
+					FONT_16x32[txt[1][charXPosition-2]] [2*bitYPosition + 1]
 				} : 32'd0;
 			5'd2: bitMap <= (charXPosition < txt[2].len() + 2) ? {
-					fonts::FONT1[txt[2][charXPosition-2]] [2*bitYPosition], 
-					fonts::FONT1[txt[2][charXPosition-2]] [2*bitYPosition + 1]
+					FONT_16x32[txt[2][charXPosition-2]] [2*bitYPosition], 
+					FONT_16x32[txt[2][charXPosition-2]] [2*bitYPosition + 1]
 				} : 32'd0;
 			default: bitMap <= 32'd0;
 		endcase
