@@ -14,74 +14,69 @@ module top
     output  [5:0]   LED
 );
 
+wire CLK_SYS;
+wire CLK_PIX;
 
-	wire		CLK_SYS;
-	wire		CLK_PIX;
+Gowin_rPLL chip_pll
+(
+    .clkout(CLK_SYS),   // output clkout  - 200M
+    .clkoutd(CLK_PIX),  // output clkoutd - 33.33M
+    .clkin(clk)         // input clkin
+);
 
-    wire        oscout_o;
+assign  LCD_R[4:0]  = lcd_rgb[4 + 8*2 : 8*2];
+assign  LCD_G[5:0]  = lcd_rgb[5 + 8*1 : 8*1];
+assign  LCD_B[4:0]  = lcd_rgb[4 + 8*0 : 8*0];
 
+wire [23:0] lcd_rgb;
+wire [23:0] lcd_data;
 
-/*  
-    //Use internal clock
-    Gowin_OSC chip_osc(
-        .oscout(oscout_o) //output oscout
-    );
-*/
+wire [11:0]	lcd_xpos;		
+wire [11:0]	lcd_ypos;
 
-/*
-    This program uses external crystal oscillator and PLL to generate 33.33mhz clock to the screen
-    If you use our 4.3-inch screen, you need to modify the PLL parameters (tools - > IP core generator) 
-    to make CLK_ Pix is between 8-12mhz (according to the specification of the screen)
-*/
+lcd_ctrl lcd_ctrl_inst (
+  	.clk        (CLK_PIX),      // lcd clock
+	.rst_n      (~rst),         // sync reset
+	.lcd_data   (lcd_data),     // lcd data
+	.lcd_hs     (LCD_HSYNC),    // lcd horizontal sync
+	.lcd_vs     (LCD_VSYNC),    // lcd vertical sync
+	.lcd_de     (LCD_DE),       // lcd display enable; 1:Display Enable Signal;0: Disable Ddsplay
+    .lcd_clk     (LCD_CLK),
+	.lcd_rgb    (lcd_rgb),      // lcd display data
+	.lcd_xpos   (lcd_xpos),     // lcd horizontal coordinate
+	.lcd_ypos   (lcd_ypos)      // lcd vertical coordinate
+);
 
-    Gowin_rPLL chip_pll
-    (
-        .clkout(CLK_SYS),   // output clkout    //200M
-        .clkoutd(CLK_PIX),  // output clkoutd   //33.33M
-        .clkin(clk)         // input clkin
-    );
+lcd_data lcd_data_inst( 
+	.clk		(clk),
+	.rst_n		(~rst),
+	.lcd_xpos	(lcd_xpos),		// lcd horizontal coordinate
+	.lcd_ypos	(lcd_ypos),		// lcd vertical coordinat
+	.lcd_data	(lcd_data)	    //lcd data
+);
 
+// LED drive
+reg [23:0]  counter;
+reg [5:0]   led_values;
 
-	VGAMod	D1
-	(
-		.CLK		(	CLK_SYS     ),
-		.nRST		(	rst),
-
-		.PixelClk	(	CLK_PIX		),
-		.LCD_DE		(	LCD_DE	 	),
-		.LCD_HSYNC	(	LCD_HSYNC 	),
-    	.LCD_VSYNC	(	LCD_VSYNC 	),
-
-		.LCD_B		(	LCD_B		),
-		.LCD_G		(	LCD_G		),
-		.LCD_R		(	LCD_R		)
-	);
-
-	assign		LCD_CLK		=	CLK_PIX;
-
-
-
-//LED drive
-    reg     [31:0]  counter;
-    reg     [5:0]   LED;
-
-
-    always @(posedge clk or negedge rst) begin
+always @(posedge clk or negedge rst) begin
     if (!rst)
         counter <= 24'd0;
     else if (counter < 24'd400_0000)       // 0.5s delay
         counter <= counter + 1;
     else
         counter <= 24'd0;
-    end
+end
 
-    always @(posedge clk or negedge rst) begin
+always @(posedge clk or negedge rst) begin
     if (!rst)
-        LED <= 6'b111010;       
-    else if (counter == 24'd400_0000)       // 0.5s delay
-        LED[5:0] <= {LED[4:0],LED[5]};        
+        led_values <= 6'b111010;       
+    else if (counter == 24'd400_0000) // 0.5s delay
+        led_values[5:0] <= {led_values[0], led_values[5:1]};
     else
-        LED <= LED;
-    end
+        led_values <= LED;
+end
+
+assign LED = led_values;
 
 endmodule

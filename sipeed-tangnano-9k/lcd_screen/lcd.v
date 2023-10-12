@@ -50,22 +50,10 @@ module VGAMod
             PixelCount      <=  PixelCount + 1'b1;
     end
 
-	reg			[9:0]  Data_R;
-	reg			[9:0]  Data_G;
-	reg			[9:0]  Data_B;
-
-    always @(  posedge PixelClk or negedge nRST  )begin
-        if( !nRST ) begin
-			Data_R <= 9'b0;
-			Data_G <= 9'b0;
-			Data_B <= 9'b0;
-            end
-	end
 	//注意这里HSYNC和VSYNC负极性
     assign  LCD_HSYNC = (( PixelCount >= H_Pluse)&&( PixelCount <= (PixelForHS-H_FrontPorch))) ? 1'b0 : 1'b1;
     //assign  LCD_VSYNC = ((( LineCount  >= 0 )&&( LineCount  <= (V_Pluse-1) )) ) ? 1'b1 : 1'b0;		//这里不减一的话，图片底部会往下拖尾？
-	assign  LCD_VSYNC = ((( LineCount  >= V_Pluse )&&( LineCount  <= (LineForVS-0) )) ) ? 1'b0 : 1'b1;
-    //assign  FIFO_RST  = (( PixelCount ==0)) ? 1'b1 : 1'b0;  //留给主机H_BackPorch的时间进入中断，发送数据
+	assign  LCD_VSYNC = ((( LineCozunt  >= V_Pluse )&&( LineCount  <= (LineForVS-0) )) ) ? 1'b0 : 1'b1;
 
     assign  LCD_DE = (  ( PixelCount >= H_BackPorch )&&
                         ( PixelCount <= PixelForHS-H_FrontPorch ) &&

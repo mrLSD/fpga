@@ -74,3 +74,4 @@ IO_LOC  "clk" 52;
 IO_PORT "clk" PULL_MODE=UP;
 
 IO_LOC  "rst" 4;
+IO_PORT "rst" PULL_MODE=UP;

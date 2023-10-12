@@ -2,11 +2,11 @@ BOARD=tangnano9k
 FAMILY=GW1N-9C
 DEVICE=GW1NR-LV9QN88PC6/I5
 
-all: app.fs
+all: clean app.fs
 
 # Synthesis
-app.json: top.v lcd.v gowin_rpll/gowin_rpll.v
-	yosys -p "read_verilog lcd.v top.v gowin_rpll/gowin_rpll.v; synth_gowin -top top -json app.json"
+app.json: top.v lcd_ctrl.v lcd_data.v gowin_rpll/gowin_rpll.v
+	yosys -p "read_verilog lcd_ctrl.v lcd_data.v top.v gowin_rpll/gowin_rpll.v; synth_gowin -top top -json app.json"
 
 # Place and Route
 app_pnr.json: app.json
@@ -30,7 +30,7 @@ test: app_test.o
 
 # Cleanup build artifacts
 clean:
-	rm app.vcd app.fs app_test.o
+	@rm app.json app.fs app_test.o app.vcd ]] true
 
 .PHONY: load clean test
 .INTERMEDIATE: app_pnr.json app.json app_test.o
